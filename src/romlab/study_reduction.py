@@ -1,4 +1,4 @@
-"""Study A: reconstruction error against latent dimension for linear and nonlinear reducers.
+"""Reduction study: error against latent dimension for linear and nonlinear reducers.
 
 For each family of exact solutions, fields at random parameters are split into training,
 validation and test sets. Each reducer is fitted on the training fields (validation fields choose

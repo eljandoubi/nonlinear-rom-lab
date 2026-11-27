@@ -1,4 +1,4 @@
-"""Study B: operator learning for Burgers, latent bottleneck models against an FNO.
+"""Operator study: Burgers operator learning, latent bottleneck models against an FNO.
 
 The initial fields are random trigonometric polynomials with ``modes`` modes, so they live in a
 linear space of dimension 2 * modes, and the outputs are Burgers solutions with shocks. Training
