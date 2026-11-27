@@ -254,8 +254,8 @@ uv run romlab operator --modes 2 --latent-epochs 4000 --fno-steps 5000 --out res
 uv run romlab operator --modes 6 --train-sizes 64,256,1024 --latent-epochs 4000 --fno-steps 5000 --out results/operator_k6.json
 uv run romlab operator --modes 2 --train-sizes 128,1024 --methods pod,nonlinear --latent-dims 4,8 --seeds 0 --latent-epochs 20000 --out results/operator_k2_long.json
 uv run romlab operator --modes 6 --train-sizes 1024 --methods pod,nonlinear --latent-dims 12,24 --seeds 0 --latent-epochs 20000 --out results/operator_k6_long.json
-uv run romlab ceiling --modes 2 --out results/ceiling_k2.json
-uv run romlab ceiling --modes 6 --out results/ceiling_k6.json
+uv run romlab reconstruction --modes 2 --out results/reconstruction_k2.json
+uv run romlab reconstruction --modes 6 --out results/reconstruction_k6.json
 uv run romlab report
 ```
 
@@ -265,22 +265,22 @@ The reduction study takes about 15 minutes on a laptop CPU and each reconstructi
 
 ```
 src/romlab/
-  families.py         four exact families and the Cole-Hopf solution
-  solvers.py          pseudo-spectral Burgers solver
-  linear.py           POD
-  polynomial.py       polynomial decoders on POD coordinates
-  neural.py           neural decoder on POD coordinates, autoencoder
-  operators.py        FNO and latent-bottleneck operators
-  metrics.py          relative error, decoder Jacobian norm, noise sensitivity, paired bootstrap
-  training.py         MLP builder and training loop
-  study_reduction.py  study A
-  study_operator.py   study B
-  study_ceiling.py    output reconstruction check
-  report.py           tables and figures
-  cli.py              romlab command
-results/              JSON results, summary.md, figures, mutants.txt
-scripts/mutants.py    hand-made faults
-tests/                one test file per module
+  families.py              four exact families and the Cole-Hopf solution
+  solvers.py               pseudo-spectral Burgers solver
+  linear.py                POD
+  polynomial.py            polynomial decoders on POD coordinates
+  neural.py                neural decoder on POD coordinates, autoencoder
+  operators.py             FNO and latent-bottleneck operators
+  metrics.py               relative error, decoder Jacobian norm, noise sensitivity, paired bootstrap
+  training.py              MLP builder and training loop
+  study_reduction.py       reduction study
+  study_operator.py        operator study
+  study_reconstruction.py  reconstruction study
+  report.py                tables and figures
+  cli.py                   romlab command
+results/                   JSON results, summary.md, figures, mutants.txt
+scripts/mutants.py         hand-made faults
+tests/                     one test file per module
 ```
 
 ## Tests
