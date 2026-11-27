@@ -306,7 +306,7 @@ def build_report(results: Path) -> list[Path]:
     for path in sorted(results.glob("operator*.json")):
         data = load(path)
         cfg = data["config"]
-        title = f"{2 * cfg['modes']}-dimensional inputs"
+        title = f"{2 * cfg['modes']}-dimensional inputs, {cfg['latent_epochs']} latent epochs"
         operator_sets.append((title, data))
         parts.append(
             f"## Operator study, {title}\n\nBurgers, nu = {cfg['nu']}, T = {cfg['t_final']}, "

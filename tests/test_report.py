@@ -94,6 +94,7 @@ def fake_operator():
             "seeds": [0, 1],
             "dims": [2, 4],
             "train_sizes": [8, 16],
+            "latent_epochs": 4000,
             "methods": ["fno", "pod", "nonlinear"],
         },
         "rows": rows,
@@ -193,7 +194,7 @@ def test_build_report_writes_tables_and_figures(tmp_path):
     assert (
         "## Reduction study" in text
         and "### a" in text
-        and "## Operator study, 4-dimensional" in text
+        and "## Operator study, 4-dimensional inputs, 4000 latent epochs" in text
     )
     assert np.isfinite(len(text))
 
