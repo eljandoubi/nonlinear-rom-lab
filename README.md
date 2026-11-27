@@ -284,7 +284,7 @@ tests/                     one test file per module
 
 ## Tests
 
-142 tests run on CPU in under a minute, and line coverage of `src/romlab` is 100%. The tests check properties:
+143 tests run on CPU in under a minute, and line coverage of `src/romlab` is 100%. The tests check properties:
 
 - POD: the Eckart-Young identity (the error is the tail of the spectrum, and no other orthonormal basis of the same size does better).
 - Families and solver: the PDE residual of the soliton and of the Cole-Hopf profile, the agreement of the solver with the Cole-Hopf solution, and the error of the solver falling by more than 100 when the step is divided by 4 (a third-order scheme gives 64).
