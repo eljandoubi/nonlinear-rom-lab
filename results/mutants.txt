@@ -1,0 +1,41 @@
+caught   solver step ignores the final time
+caught   solver dealiases at n/2
+caught   solver half factor equals the full factor
+caught   solver nonlinear coefficient 1 instead of 1/2
+caught   solver RK4 weights 1 instead of 2
+caught   soliton height c instead of c/2
+caught   Cole-Hopf factor 2 dropped
+caught   Gaussian pulse without the square
+caught   POD mean not removed
+caught   POD skips the first mode
+caught   POD tail error off by one
+caught   exponent vectors miss the top degree
+caught   Legendre degree shifted by one
+caught   polynomial tie tolerance removed
+caught   polynomial ridge removed
+caught   polynomial ROM drops the POD part
+caught   relative error divides by the prediction
+caught   Jacobian step factor 2 dropped
+caught   bootstrap quantiles swapped
+caught   bootstrap resamples one index
+caught   training keeps the worst validation weights
+caught   training does not restore the best weights
+caught   last epoch not evaluated
+caught   neural decoder not zero-initialised
+caught   neural decoder drops the POD part
+caught   autoencoder decode forgets the scale
+caught   initial fields decay like 1/k^2
+caught   spectral layer keeps one mode too many
+caught   fixed decoder ignores the spread
+caught   linear decoder initialisation ignores the spread
+caught   dataset output sampled on the wrong points
+caught   selection prefers the highest validation error
+caught   selection tie goes to the larger dimension
+caught   comparison sign reversed
+caught   validation fields taken from the training pool
+caught   same parameter draw for every split
+caught   sensitivity in raw instead of unit-spread coordinates
+caught   smallest dimension reports the largest
+caught   number format switches at 1e-2
+
+39 of 39 hand-made faults caught
