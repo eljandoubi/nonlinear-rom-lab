@@ -26,6 +26,7 @@ from romlab.polynomial import PolynomialROM
 
 METHODS = ("pod", "quadratic", "polynomial", "pca_mlp", "autoencoder")
 NEURAL = ("pca_mlp", "autoencoder")
+RIDGES = (1e-10, 1e-8, 1e-6, 1e-4, 1e-2)
 
 
 @dataclass(frozen=True)
@@ -57,9 +58,9 @@ def fit_reducer(method: str, n: int, train, val, seed: int, epochs: int, device:
     if method == "pod":
         return POD(n).fit(train)
     if method == "quadratic":
-        return PolynomialROM(n, degree=2).fit(train)
+        return PolynomialROM(n, degree=2, ridges=RIDGES).fit(train, val)
     if method == "polynomial":
-        return PolynomialROM(n, degree=None, max_degree=12).fit(train, val)
+        return PolynomialROM(n, degree=None, max_degree=12, ridges=RIDGES).fit(train, val)
     if method == "pca_mlp":
         return NeuralDecoderROM(n, epochs=epochs, seed=seed, device=device).fit(train, val)
     if method == "autoencoder":

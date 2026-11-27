@@ -97,6 +97,23 @@ def test_degree_one_gives_back_pod():
     assert np.allclose(rom.reconstruct(test), POD(3).fit(train).reconstruct(test), atol=1e-9)
 
 
+def test_a_fixed_degree_still_chooses_the_ridge_on_validation_fields():
+    # Fields unrelated to the codes: every fitted residual only adds error, so the strongest
+    # ridge wins.
+    rng = np.random.default_rng(11)
+    train = rng.normal(size=(14, 20))
+    val = rng.normal(size=(10, 20))
+    rom = PolynomialROM(3, degree=2, ridges=(1e-10, 10.0)).fit(train, val)
+    assert rom.chosen_degree == 2
+    assert rom.chosen_ridge == 10.0
+
+
+def test_a_fixed_degree_without_validation_uses_the_first_ridge():
+    train = np.random.default_rng(11).normal(size=(14, 20))
+    rom = PolynomialROM(3, degree=2, ridges=(1e-10, 10.0)).fit(train)
+    assert rom.chosen_ridge == 1e-10
+
+
 def test_degree_is_picked_on_validation_and_ties_go_to_the_lowest():
     make = _quadratic_family(np.random.default_rng(5))
     train = make(np.linspace(-1, 1, 41))

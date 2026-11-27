@@ -79,11 +79,12 @@ class PolynomialDecoder:
 class PolynomialROM:
     """POD encoder with a polynomial decoder of the part of the fields outside the basis.
 
-    With a fixed ``degree`` (2 by default) the first ridge penalty is used. With
-    ``degree=None`` the degree (1 to ``max_degree``) and the ridge penalty are scored on the
-    validation fields by mean relative L2 error, and the first candidate (lowest degree, then
-    smallest ridge) within 1 percent of the best score is kept. Scores below 1e-8 count as equal.
-    Degrees that would need more than ``max_terms`` coefficients are skipped.
+    Without validation fields the decoder has the fixed ``degree`` (2 by default) and the first
+    ridge penalty. With validation fields, every candidate is scored by mean relative L2 error:
+    the ridge penalties for a fixed ``degree``, or degrees 1 to ``max_degree`` times the ridge
+    penalties for ``degree=None``. The first candidate (lowest degree, then smallest ridge)
+    within 1 percent of the best score is kept, and scores below 1e-8 count as equal. Degrees
+    that would need more than ``max_terms`` coefficients are skipped.
     """
 
     def __init__(
@@ -104,15 +105,16 @@ class PolynomialROM:
         self.pod = POD(self.n).fit(train)
         codes = self.pod.encode(train)
         outside = train - self.pod.decode(codes)
-        if self.degree is not None:
+        if self.degree is not None and val is None:
             self.decoder = PolynomialDecoder(self.degree, self.ridges[0]).fit(codes, outside)
             return self
         if val is None:
             raise ValueError("validation fields are needed to choose the degree")
         val_codes = self.pod.encode(val)
         linear_part = self.pod.decode(val_codes)
+        degrees = [self.degree] if self.degree is not None else range(1, self.max_degree + 1)
         scored = []
-        for degree in range(1, self.max_degree + 1):
+        for degree in degrees:
             if n_polynomial_terms(self.n, degree) > self.max_terms:
                 break
             for ridge in self.ridges:
