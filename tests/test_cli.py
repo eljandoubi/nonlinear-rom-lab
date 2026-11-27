@@ -2,12 +2,19 @@ import json
 
 import pytest
 
-from romlab.cli import build_parser, main, resolve_device
+from romlab.cli import build_parser, environment_info, main, resolve_device
 
 
 def test_device_names():
     assert resolve_device("cpu") == "cpu"
     assert resolve_device("auto") in ("cpu", "cuda")
+
+
+def test_environment_records_the_gpu_name_only_on_a_gpu(monkeypatch):
+    monkeypatch.setattr("torch.cuda.is_available", lambda: True)
+    monkeypatch.setattr("torch.cuda.get_device_name", lambda index: "Fake T4")
+    assert environment_info("cuda")["gpu"] == "Fake T4"
+    assert "gpu" not in environment_info("cpu")
 
 
 def test_parser_reads_integer_lists_and_defaults():

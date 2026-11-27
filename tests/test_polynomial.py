@@ -103,6 +103,7 @@ def test_degree_is_picked_on_validation_and_ties_go_to_the_lowest():
     val = make(np.random.default_rng(6).uniform(-1, 1, size=25))
     rom = PolynomialROM(1, degree=None, max_degree=6).fit(train, val)
     assert rom.chosen_degree == 2
+    assert rom.chosen_ridge in rom.ridges
 
 
 def test_validation_prefers_a_high_degree_when_the_manifold_needs_it():
