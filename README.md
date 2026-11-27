@@ -70,7 +70,7 @@ Two more checks use the same data. The first reconstructs the true test outputs 
 
 ![Test error against latent dimension](results/reduction_error.png)
 
-Mean relative L2 error on the test fields against the latent dimension n, for the five reducers. Bands show the minimum and the maximum over the three seeds. `results/summary.md` has the table for every n. Smallest n with a mean test error below 1%:
+Mean relative L2 error on the test fields against the latent dimension n, for the five reducers. Bands show the minimum and the maximum over the three seeds. `results/summary.md` has the table for every n. Smallest n with a mean test error below 1%, among n = 1, 2, 3, 4, 6, 8, 12, 16:
 
 | family | POD | quadratic | polynomial | POD + MLP | autoencoder |
 |---|---|---|---|---|---|
