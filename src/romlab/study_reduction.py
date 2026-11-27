@@ -130,6 +130,7 @@ def run_reduction_study(
                     }
                     if method in ("quadratic", "polynomial"):
                         row["degree"] = model.chosen_degree
+                        row["ridge"] = model.chosen_ridge
                     if method in NEURAL:
                         row["best_epoch"] = model.history.best_epoch
                     row["fit_seconds"] = time.perf_counter() - start

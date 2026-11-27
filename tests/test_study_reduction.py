@@ -6,6 +6,7 @@ import pytest
 from romlab.families import get_family
 from romlab.study_reduction import (
     METHODS,
+    RIDGES,
     ReductionConfig,
     decoder_stability,
     fit_reducer,
@@ -71,6 +72,9 @@ def test_run_produces_one_row_per_cell_with_finite_numbers():
         assert keys <= row.keys()
         assert np.isfinite([row["train_error"], row["test_error"], row["noise_median"]]).all()
     assert set(out["spectra"]) == {"pulse", "soliton"}
+    chosen = [r for r in out["rows"] if r["method"] in ("quadratic", "polynomial")]
+    assert chosen and all(r["degree"] >= 1 and r["ridge"] in RIDGES for r in chosen)
+    assert all("degree" not in r for r in out["rows"] if r["method"] == "pod")
     assert out["spectra"]["pulse"][0] == 1.0
     json.dumps(out)
 
