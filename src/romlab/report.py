@@ -146,7 +146,7 @@ def operator_error_table(data: dict) -> str:
     return md_table(["training fields"] + [OPERATOR_LABELS[m] for m in methods], rows)
 
 
-def ceiling_table(data: dict) -> str:
+def reconstruction_table(data: dict) -> str:
     """Mean test error of each reducer on the true outputs, by latent size."""
     methods = data["config"]["methods"]
     rows = []
@@ -336,7 +336,7 @@ def build_report(results: Path) -> list[Path]:
     if operator_sets:
         plot_operator(operator_sets, results / "operator_error.png")
         written.append(results / "operator_error.png")
-    for path in sorted(results.glob("ceiling*.json")):
+    for path in sorted(results.glob("reconstruction*.json")):
         data = load(path)
         cfg = data["config"]
         parts.append(
@@ -346,7 +346,7 @@ def build_report(results: Path) -> list[Path]:
             "encoding of the true output as the latent code. It shows how much the bottleneck "
             "alone costs for each decoder family; it is not a strict bound, since the operator "
             f"models train their decoders end to end. Mean over seeds {cfg['seeds']}.\n\n"
-            + ceiling_table(data)
+            + reconstruction_table(data)
         )
     summary = results / "summary.md"
     summary.write_text(

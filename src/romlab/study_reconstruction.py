@@ -1,10 +1,10 @@
-"""Ceiling of the latent decoders: reconstruct the true outputs of the operator task.
+"""Reconstruction of the true outputs of the operator task by the reducers of the reduction study.
 
 A latent operator model predicts n_z numbers from its input and decodes them to the output field.
-Even with a perfect predictor its error cannot go below what the decoder family loses when it
-reconstructs the true output from n_z numbers. This study fits the reducers of the reduction
-study on the training outputs of the operator task and scores them on the test outputs, which are
-the same fields as in the operator study for the same configuration.
+This study fits each reducer on the training outputs of the operator task and scores the
+reconstruction of the test outputs, the same fields as in the operator study for the same
+configuration. It shows what the bottleneck costs apart from the map from the input to the code.
+It is a reference and not a bound, because the operator models train their decoders end to end.
 """
 
 from __future__ import annotations
@@ -16,13 +16,13 @@ from romlab.operators import make_operator_dataset
 from romlab.study_operator import OperatorConfig
 from romlab.study_reduction import NEURAL, fit_reducer
 
-CEILING_METHODS = ("pod", "pca_mlp", "autoencoder")
+RECONSTRUCTION_METHODS = ("pod", "pca_mlp", "autoencoder")
 
 
-def run_ceiling_study(
+def run_reconstruction_study(
     cfg: OperatorConfig,
     train_size: int,
-    methods: tuple[str, ...] = CEILING_METHODS,
+    methods: tuple[str, ...] = RECONSTRUCTION_METHODS,
     seeds: tuple[int, ...] = (0,),
     epochs: int = 4000,
     progress: Callable[[str], None] | None = None,

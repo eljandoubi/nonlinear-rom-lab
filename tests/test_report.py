@@ -5,13 +5,13 @@ import pytest
 
 from romlab.report import (
     build_report,
-    ceiling_table,
     fmt,
     md_table,
     operator_comparison_table,
     operator_error_table,
     operator_params_table,
     pod_decay_table,
+    reconstruction_table,
     reduction_curve,
     reduction_error_table,
     smallest_dimension_table,
@@ -104,7 +104,7 @@ def fake_operator():
     }
 
 
-def fake_ceiling():
+def fake_reconstruction():
     rows = []
     for n_z, pod, ae in ((4, 0.2, 0.04), (8, 0.1, 0.02)):
         rows.append({"method": "pod", "n_z": n_z, "seed": 0, "test_error": pod})
@@ -126,8 +126,8 @@ def fake_ceiling():
     }
 
 
-def test_ceiling_table_lists_each_latent_size():
-    lines = ceiling_table(fake_ceiling()).splitlines()
+def test_reconstruction_table_lists_each_latent_size():
+    lines = reconstruction_table(fake_reconstruction()).splitlines()
     assert lines == [
         "| latent size | POD | autoencoder |",
         "|---|---|---|",
@@ -136,8 +136,8 @@ def test_ceiling_table_lists_each_latent_size():
     ]
 
 
-def test_report_includes_the_ceiling_section(tmp_path):
-    (tmp_path / "ceiling_k2.json").write_text(json.dumps(fake_ceiling()))
+def test_report_includes_the_reconstruction_section(tmp_path):
+    (tmp_path / "reconstruction_k2.json").write_text(json.dumps(fake_reconstruction()))
     paths = build_report(tmp_path)
     text = (tmp_path / "summary.md").read_text()
     assert [p.name for p in paths] == ["summary.md"]

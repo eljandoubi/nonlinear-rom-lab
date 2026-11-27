@@ -9,8 +9,8 @@ from pathlib import Path
 
 from romlab.families import FAMILY_NAMES
 from romlab.operators import LATENT_KINDS
-from romlab.study_ceiling import CEILING_METHODS, run_ceiling_study
 from romlab.study_operator import OperatorConfig, run_operator_study
+from romlab.study_reconstruction import RECONSTRUCTION_METHODS, run_reconstruction_study
 from romlab.study_reduction import METHODS, ReductionConfig, run_reduction_study
 
 
@@ -73,17 +73,17 @@ def build_parser() -> argparse.ArgumentParser:
     op.add_argument("--device", default="auto")
     op.add_argument("--out", type=Path, default=Path("results/operator.json"))
 
-    cel = sub.add_parser("ceiling", help="reconstruct the true outputs of the operator task")
-    cel.add_argument("--modes", type=int, default=OperatorConfig.modes)
-    cel.add_argument("--train-size", type=int, default=1024)
-    cel.add_argument("--latent-dims", type=_ints, default=None)
-    cel.add_argument("--methods", default=",".join(CEILING_METHODS))
-    cel.add_argument("--seeds", type=_ints, default=(0,))
-    cel.add_argument("--n-val", type=int, default=OperatorConfig.n_val)
-    cel.add_argument("--n-test", type=int, default=OperatorConfig.n_test)
-    cel.add_argument("--epochs", type=int, default=OperatorConfig.latent_epochs)
-    cel.add_argument("--device", default="auto")
-    cel.add_argument("--out", type=Path, default=Path("results/ceiling.json"))
+    rec = sub.add_parser("reconstruction", help="reconstruct the true outputs of the operator task")
+    rec.add_argument("--modes", type=int, default=OperatorConfig.modes)
+    rec.add_argument("--train-size", type=int, default=1024)
+    rec.add_argument("--latent-dims", type=_ints, default=None)
+    rec.add_argument("--methods", default=",".join(RECONSTRUCTION_METHODS))
+    rec.add_argument("--seeds", type=_ints, default=(0,))
+    rec.add_argument("--n-val", type=int, default=OperatorConfig.n_val)
+    rec.add_argument("--n-test", type=int, default=OperatorConfig.n_test)
+    rec.add_argument("--epochs", type=int, default=OperatorConfig.latent_epochs)
+    rec.add_argument("--device", default="auto")
+    rec.add_argument("--out", type=Path, default=Path("results/reconstruction.json"))
 
     rep = sub.add_parser("report", help="tables and figures from the JSON results")
     rep.add_argument("--results", type=Path, default=Path("results"))
@@ -144,7 +144,7 @@ def main(argv: list[str] | None = None) -> int:
         )
         args.out.with_suffix(".partial.json").unlink(missing_ok=True)
         say(f"wrote {args.out}")
-    elif args.command == "ceiling":
+    elif args.command == "reconstruction":
         cfg = OperatorConfig(
             modes=args.modes,
             latent_dims=args.latent_dims,
@@ -152,7 +152,7 @@ def main(argv: list[str] | None = None) -> int:
             n_test=args.n_test,
             device=resolve_device(args.device),
         )
-        result = run_ceiling_study(
+        result = run_reconstruction_study(
             cfg,
             args.train_size,
             methods=tuple(args.methods.split(",")),
