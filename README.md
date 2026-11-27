@@ -168,8 +168,8 @@ Longer training of the latent models (20,000 epochs instead of 4,000, one seed, 
 
 | training fields | fixed POD decoder | linear + MLP decoder |
 |---|---|---|
-| 128 | 0.13 (0.13 to 0.13) | 0.045 (0.045 to 0.045) |
-| 1024 | 0.08 (0.08 to 0.08) | 0.0039 (0.0039 to 0.0039) |
+| 128 | 0.13 | 0.045 |
+| 1024 | 0.08 | 0.0039 |
 
 Reconstruction of the true test outputs from n_z numbers, with each reducer's own encoder (one seed). It shows what the bottleneck costs, apart from the map from the input to the code; it is not a strict bound, since the operator models train their decoders end to end:
 
@@ -218,7 +218,7 @@ Longer training (20,000 epochs, 1024 fields, one seed, latent sizes 12 and 24):
 
 | training fields | fixed POD decoder | linear + MLP decoder |
 |---|---|---|
-| 1024 | 0.1 (0.1 to 0.1) | 0.035 (0.035 to 0.035) |
+| 1024 | 0.1 | 0.035 |
 
 Reconstruction of the true test outputs (one seed):
 

@@ -154,12 +154,12 @@ Paired differences of test error (first minus second, negative means the first i
 
 ## Operator study, 4-dimensional inputs, 20000 latent epochs
 
-Burgers, nu = 0.02, T = 0.4, 256 grid points, seeds [0], latent sizes [4, 8] (chosen per fit on validation fields). Test error: mean over seeds with the range over seeds in brackets.
+Burgers, nu = 0.02, T = 0.4, 256 grid points, seeds [0], latent sizes [4, 8] (chosen per fit on validation fields). Test error: mean over seeds.
 
 | training fields | fixed POD decoder | linear + MLP decoder |
 |---|---|---|
-| 128 | 0.13 (0.13 to 0.13) | 0.045 (0.045 to 0.045) |
-| 1024 | 0.08 (0.08 to 0.08) | 0.0039 (0.0039 to 0.0039) |
+| 128 | 0.13 | 0.045 |
+| 1024 | 0.08 | 0.0039 |
 
 Trainable parameters.
 
@@ -212,11 +212,11 @@ Paired differences of test error (first minus second, negative means the first i
 
 ## Operator study, 12-dimensional inputs, 20000 latent epochs
 
-Burgers, nu = 0.02, T = 0.4, 256 grid points, seeds [0], latent sizes [12, 24] (chosen per fit on validation fields). Test error: mean over seeds with the range over seeds in brackets.
+Burgers, nu = 0.02, T = 0.4, 256 grid points, seeds [0], latent sizes [12, 24] (chosen per fit on validation fields). Test error: mean over seeds.
 
 | training fields | fixed POD decoder | linear + MLP decoder |
 |---|---|---|
-| 1024 | 0.1 (0.1 to 0.1) | 0.035 (0.035 to 0.035) |
+| 1024 | 0.1 | 0.035 |
 
 Trainable parameters.
 
