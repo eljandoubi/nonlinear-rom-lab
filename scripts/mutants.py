@@ -2,7 +2,7 @@
 
 Usage: python scripts/mutants.py [results/mutants.txt]
 
-Each fault is applied to a copy of the file text, the matching test file runs, and the original
+Each fault is written into the source file, the matching test file runs, and the original
 text is written back whatever happens. A fault counts as caught when the tests fail.
 """
 
