@@ -30,6 +30,7 @@ def test_split_sizes_and_independent_draws():
     a = make_split(fam, 0, 6, 4, 5)
     assert a["train"].shape == (6, 40) and a["val"].shape == (4, 40) and a["test"].shape == (5, 40)
     assert not np.allclose(a["train"][:4], a["val"])
+    assert not np.allclose(a["val"], a["test"][:4])
     b = make_split(fam, 0, 6, 4, 5)
     assert np.array_equal(a["test"], b["test"])
     assert not np.array_equal(a["test"], make_split(fam, 1, 6, 4, 5)["test"])

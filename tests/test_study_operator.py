@@ -3,7 +3,9 @@ import json
 import numpy as np
 import pytest
 
+from romlab.operators import FittedOperator
 from romlab.study_operator import COMPARISONS, OperatorConfig, _selected_dim, run_operator_study
+from romlab.training import History
 
 TINY = OperatorConfig(
     modes=1,
@@ -122,3 +124,37 @@ def test_checkpoint_receives_the_rows_so_far():
     sizes = []
     run_operator_study(cfg, checkpoint=lambda rows: sizes.append(len(rows)))
     assert sizes == [2, 4]
+
+
+def test_splits_do_not_overlap_and_training_sets_are_nested(monkeypatch):
+    trains, vals, predicted = [], [], []
+
+    def fake_fit(kind, n_z, n_in, train, val, seed, epochs, device):
+        trains.append(train[0])
+        vals.append(val[0])
+
+        def predict(fields):
+            predicted.append(fields)
+            return np.zeros_like(fields)
+
+        return FittedOperator(predict, 1, History(best_epoch=1), 0.0)
+
+    monkeypatch.setattr("romlab.study_operator.fit_latent", fake_fit)
+    cfg = OperatorConfig(
+        modes=1,
+        train_sizes=(8, 12),
+        methods=("pod",),
+        latent_dims=(2,),
+        seeds=(0,),
+        n_val=4,
+        n_test=6,
+        n_grid=32,
+        dt=5e-3,
+    )
+    run_operator_study(cfg)
+    small, large = trains
+    assert np.array_equal(large[:8], small)
+    test = predicted[1]  # each fit scores the validation fields, then the test fields
+    assert test.shape == (6, 32) and np.array_equal(predicted[0], vals[0])
+    rows = np.vstack([large, vals[0], test])
+    assert len({tuple(np.round(r, 12)) for r in rows}) == len(rows)
