@@ -1,0 +1,86 @@
+{
+ "config": {
+  "modes": 2,
+  "nu": 0.02,
+  "t_final": 0.4,
+  "n_grid": 256,
+  "train_size": 1024,
+  "dims": [
+   2,
+   4,
+   8
+  ],
+  "methods": [
+   "pod",
+   "pca_mlp",
+   "autoencoder"
+  ],
+  "seeds": [
+   0
+  ],
+  "epochs": 4000,
+  "device": "cpu"
+ },
+ "rows": [
+  {
+   "method": "pod",
+   "n_z": 2,
+   "seed": 0,
+   "test_error": 0.44433827285345395
+  },
+  {
+   "method": "pca_mlp",
+   "n_z": 2,
+   "seed": 0,
+   "test_error": 0.19281684822995215
+  },
+  {
+   "method": "autoencoder",
+   "n_z": 2,
+   "seed": 0,
+   "test_error": 0.16316888268397123
+  },
+  {
+   "method": "pod",
+   "n_z": 4,
+   "seed": 0,
+   "test_error": 0.2308974704156125
+  },
+  {
+   "method": "pca_mlp",
+   "n_z": 4,
+   "seed": 0,
+   "test_error": 0.01457557319554367
+  },
+  {
+   "method": "autoencoder",
+   "n_z": 4,
+   "seed": 0,
+   "test_error": 0.011320667840252
+  },
+  {
+   "method": "pod",
+   "n_z": 8,
+   "seed": 0,
+   "test_error": 0.07827665701025709
+  },
+  {
+   "method": "pca_mlp",
+   "n_z": 8,
+   "seed": 0,
+   "test_error": 0.002793340087885905
+  },
+  {
+   "method": "autoencoder",
+   "n_z": 8,
+   "seed": 0,
+   "test_error": 0.009217816481481728
+  }
+ ],
+ "environment": {
+  "python": "3.12.13",
+  "numpy": "2.5.5",
+  "torch": "2.15.0",
+  "device": "cpu"
+ }
+}

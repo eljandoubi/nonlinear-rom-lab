@@ -1,0 +1,119 @@
+{
+ "config": {
+  "modes": 6,
+  "train_sizes": [
+   1024
+  ],
+  "latent_dims": [
+   12,
+   24
+  ],
+  "methods": [
+   "pod",
+   "nonlinear"
+  ],
+  "seeds": [
+   0
+  ],
+  "n_val": 128,
+  "n_test": 256,
+  "nu": 0.02,
+  "t_final": 0.4,
+  "n_grid": 256,
+  "dt": 0.0005,
+  "latent_epochs": 20000,
+  "fno_steps": 3000,
+  "fno_modes": 16,
+  "fno_width": 32,
+  "fno_layers": 4,
+  "device": "cuda",
+  "dims": [
+   12,
+   24
+  ]
+ },
+ "dataset": {
+  "n_in": 12,
+  "mean_output_to_input_norm": 0.4109217963924143,
+  "max_abs_mean_output": 1.3877787807814457e-16
+ },
+ "rows": [
+  {
+   "method": "pod",
+   "n_z": 12,
+   "m": 1024,
+   "seed": 0,
+   "val_error": 0.11798574889137037,
+   "test_error": 0.10861346692856919,
+   "n_params": 19724,
+   "best_epoch": 2400,
+   "fit_seconds": 83.9424556970007
+  },
+  {
+   "method": "pod",
+   "n_z": 24,
+   "m": 1024,
+   "seed": 0,
+   "val_error": 0.11615030028529119,
+   "test_error": 0.10270182332311562,
+   "n_params": 21272,
+   "best_epoch": 2650,
+   "fit_seconds": 83.40827204800007
+  },
+  {
+   "method": "nonlinear",
+   "n_z": 12,
+   "m": 1024,
+   "seed": 0,
+   "val_error": 0.04368882648149677,
+   "test_error": 0.03854393028056392,
+   "n_params": 123532,
+   "best_epoch": 8250,
+   "fit_seconds": 276.9190144060003
+  },
+  {
+   "method": "nonlinear",
+   "n_z": 24,
+   "m": 1024,
+   "seed": 0,
+   "val_error": 0.03826630347362004,
+   "test_error": 0.0349118902835008,
+   "n_params": 129688,
+   "best_epoch": 11700,
+   "fit_seconds": 281.35498562799967
+  }
+ ],
+ "selected": [
+  {
+   "method": "pod",
+   "m": 1024,
+   "seed": 0,
+   "n_z": 24,
+   "test_error": 0.10270182332311562
+  },
+  {
+   "method": "nonlinear",
+   "m": 1024,
+   "seed": 0,
+   "n_z": 24,
+   "test_error": 0.0349118902835008
+  }
+ ],
+ "comparisons": [
+  {
+   "m": 1024,
+   "a": "nonlinear",
+   "b": "pod",
+   "mean_diff": -0.06778993303961482,
+   "lo": -0.07315040220274614,
+   "hi": -0.06258695655661341
+  }
+ ],
+ "environment": {
+  "python": "3.13.16",
+  "numpy": "2.4.6",
+  "torch": "2.14.1+cu130",
+  "device": "cuda",
+  "gpu": "Tesla T4"
+ }
+}
