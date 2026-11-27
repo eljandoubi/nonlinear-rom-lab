@@ -89,3 +89,11 @@ def test_without_validation_the_last_weights_are_kept():
     assert hist.best_epoch == 20
     assert hist.val_loss == []
     assert np.isnan(hist.best_val)
+
+
+def test_the_last_epoch_is_always_evaluated():
+    torch.manual_seed(0)
+    net = mlp([1, 8, 1]).double()
+    x, y = _line_data()
+    hist = fit(net, x, y, x, y, epochs=7, eval_every=5)
+    assert hist.epochs == [5, 7]

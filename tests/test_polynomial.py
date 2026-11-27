@@ -56,6 +56,15 @@ def test_decoder_rejects_a_degree_below_one():
         PolynomialDecoder(0)
 
 
+def test_a_larger_ridge_shrinks_the_coefficients():
+    rng = np.random.default_rng(10)
+    codes = rng.uniform(-1, 1, size=(20, 3))
+    targets = rng.normal(size=(20, 5))  # 35 terms for 20 samples: the fit is underdetermined
+    small = PolynomialDecoder(4, ridge=1e-10).fit(codes, targets)
+    large = PolynomialDecoder(4, ridge=1e-1).fit(codes, targets)
+    assert np.linalg.norm(large.coef) < 0.9 * np.linalg.norm(small.coef)
+
+
 def _quadratic_family(rng, n_grid=60):
     """Fields phi * a + w * (a^2) with phi and w orthogonal, so POD finds phi exactly."""
     q, _ = np.linalg.qr(rng.normal(size=(n_grid, 2)))

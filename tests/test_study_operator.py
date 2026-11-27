@@ -158,3 +158,31 @@ def test_splits_do_not_overlap_and_training_sets_are_nested(monkeypatch):
     assert test.shape == (6, 32) and np.array_equal(predicted[0], vals[0])
     rows = np.vstack([large, vals[0], test])
     assert len({tuple(np.round(r, 12)) for r in rows}) == len(rows)
+
+
+def test_a_negative_difference_means_the_first_method_is_better(monkeypatch):
+    # Targets are 2 * inputs. "nonlinear" predicts them exactly, "pod" predicts 1 * inputs
+    # (relative error 0.5), so nonlinear minus pod is -0.5 for every test field.
+    def fake_data(n, **kwargs):
+        u0 = np.random.default_rng(0).normal(size=(n, 16))
+        return {"u0": u0, "u_final": 2.0 * u0}
+
+    def fake_fit(kind, n_z, n_in, train, val, seed, epochs, device):
+        factor = 2.0 if kind == "nonlinear" else 1.0
+        return FittedOperator(lambda x: factor * x, 1, History(best_epoch=1), 0.0)
+
+    monkeypatch.setattr("romlab.study_operator.make_operator_dataset", fake_data)
+    monkeypatch.setattr("romlab.study_operator.fit_latent", fake_fit)
+    cfg = OperatorConfig(
+        modes=1,
+        train_sizes=(8,),
+        methods=("pod", "nonlinear"),
+        latent_dims=(2,),
+        seeds=(0, 1),
+        n_val=4,
+        n_test=6,
+    )
+    (comp,) = run_operator_study(cfg)["comparisons"]
+    assert (comp["a"], comp["b"]) == ("nonlinear", "pod")
+    assert comp["mean_diff"] == pytest.approx(-0.5)
+    assert comp["lo"] == pytest.approx(-0.5) and comp["hi"] == pytest.approx(-0.5)

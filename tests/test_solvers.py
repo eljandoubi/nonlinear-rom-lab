@@ -86,3 +86,13 @@ def test_resolution_and_step_refinement_change_the_front_little():
 def test_a_zero_field_stays_zero():
     u = burgers_solve(torch.zeros(2, 64, dtype=torch.float64), 0.02, 0.1)
     assert torch.count_nonzero(u) == 0
+
+
+def test_modes_above_the_two_thirds_cutoff_stay_zero():
+    # Products of modes 40 and 35 land above n/2 and would alias without the cutoff.
+    n = 128
+    x = np.arange(n) / n
+    u0 = np.cos(2 * np.pi * 40 * x) + 0.5 * np.sin(2 * np.pi * 35 * x)
+    u = _solve(u0, 0.001, 0.05, 1e-3)
+    assert np.abs(np.fft.rfft(u))[n // 3 + 1 :].max() < 1e-10
+    assert np.abs(np.fft.rfft(u))[: n // 3 + 1].max() > 1.0
