@@ -61,7 +61,11 @@ def _selected_dim(rows: list[dict], m: int, seed: int, method: str) -> int:
     return min(cand, key=lambda r: (r["val_error"], r["n_z"]))["n_z"]
 
 
-def run_operator_study(cfg: OperatorConfig, progress: Callable[[str], None] | None = None) -> dict:
+def run_operator_study(
+    cfg: OperatorConfig,
+    progress: Callable[[str], None] | None = None,
+    checkpoint: Callable[[list[dict]], None] | None = None,
+) -> dict:
     pool = max(cfg.train_sizes)
     data = make_operator_dataset(
         pool + cfg.n_val + cfg.n_test,
@@ -121,6 +125,8 @@ def run_operator_study(cfg: OperatorConfig, progress: Callable[[str], None] | No
                     record(method, n_z, m, seed, fitted)
             if progress:
                 progress(f"m={m} seed={seed} done")
+            if checkpoint:
+                checkpoint(rows)
 
     latent_methods = [k for k in cfg.methods if k != "fno"]
     selected = []

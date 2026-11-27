@@ -118,10 +118,18 @@ def main(argv: list[str] | None = None) -> int:
             fno_steps=args.fno_steps,
             device=resolve_device(args.device),
         )
+
+        def save_partial(rows: list[dict]) -> None:
+            _write(args.out.with_suffix(".partial.json"), {"rows": rows})
+
         _write(
             args.out,
-            {**run_operator_study(cfg, progress=say), "environment": environment_info(cfg.device)},
+            {
+                **run_operator_study(cfg, progress=say, checkpoint=save_partial),
+                "environment": environment_info(cfg.device),
+            },
         )
+        args.out.with_suffix(".partial.json").unlink(missing_ok=True)
         say(f"wrote {args.out}")
     else:
         from romlab.report import build_report

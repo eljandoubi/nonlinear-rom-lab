@@ -104,3 +104,21 @@ def test_comparisons_skip_pairs_with_a_missing_method():
     out = run_operator_study(cfg)
     assert [(c["a"], c["b"]) for c in out["comparisons"]] == [("nonlinear", "pod")]
     assert all(r["method"] != "fno" for r in out["rows"])
+
+
+def test_checkpoint_receives_the_rows_so_far():
+    cfg = OperatorConfig(
+        modes=1,
+        train_sizes=(8,),
+        methods=("pod",),
+        latent_dims=(1, 2),
+        seeds=(0, 1),
+        n_val=4,
+        n_test=6,
+        n_grid=32,
+        dt=5e-3,
+        latent_epochs=2,
+    )
+    sizes = []
+    run_operator_study(cfg, checkpoint=lambda rows: sizes.append(len(rows)))
+    assert sizes == [2, 4]
