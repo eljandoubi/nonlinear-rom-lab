@@ -1,0 +1,53 @@
+[project]
+name = "nonlinear-rom-lab"
+version = "0.1.0"
+description = "Linear and nonlinear reduced representations of PDE solutions, and operator learning in a latent space, measured against POD and a Fourier neural operator"
+readme = "README.md"
+license = "Apache-2.0"
+authors = [
+    { name = "AbdelKarim ELJANDOUBI", email = "78537694+eljandoubi@users.noreply.github.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "matplotlib>=3.8",
+    "numpy>=1.26",
+    "torch>=2.4",
+]
+
+[project.scripts]
+romlab = "romlab.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "pytest-cov>=5",
+    "ruff>=0.6",
+]
+
+[build-system]
+requires = ["uv_build>=0.8,<0.13"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "romlab"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-m 'not slow'"
+markers = [
+    "slow: tests that take more than a few seconds",
+]
+
+[tool.coverage.run]
+source = ["romlab"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N", "W"]
