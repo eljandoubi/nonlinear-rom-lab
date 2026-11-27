@@ -1,6 +1,5 @@
 import json
 
-import numpy as np
 import pytest
 
 from romlab.report import (
@@ -249,7 +248,6 @@ def test_build_report_writes_tables_and_figures(tmp_path):
         and "### a" in text
         and "## Operator study, 4-dimensional inputs, 4000 latent epochs" in text
     )
-    assert np.isfinite(len(text))
 
 
 def test_report_without_results_still_writes_a_summary(tmp_path):
