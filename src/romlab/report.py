@@ -146,6 +146,18 @@ def operator_error_table(data: dict) -> str:
     return md_table(["training fields"] + [OPERATOR_LABELS[m] for m in methods], rows)
 
 
+def operator_params_table(data: dict) -> str:
+    """Number of trainable parameters of each operator model and latent size."""
+    counts = {(r["method"], r["n_z"]): r["n_params"] for r in data["rows"]}
+    order = {m: i for i, m in enumerate(data["config"]["methods"])}
+    keys = sorted(counts, key=lambda k: (order[k[0]], k[1] or 0))
+    rows = [
+        [OPERATOR_LABELS[m], "none" if z is None else str(z), f"{counts[(m, z)]:,}"]
+        for m, z in keys
+    ]
+    return md_table(["model", "latent size", "parameters"], rows)
+
+
 def operator_comparison_table(data: dict) -> str:
     pairs = sorted({(c["a"], c["b"]) for c in data["comparisons"]})
     rows = []
@@ -302,6 +314,8 @@ def build_report(results: Path) -> list[Path]:
             "(chosen per fit on validation fields). Test error: mean over seeds with the range "
             "over seeds in brackets.\n\n"
             + operator_error_table(data)
+            + "\n\nTrainable parameters.\n\n"
+            + operator_params_table(data)
             + "\n\nPaired differences of test error (first minus second, negative means the first "
             "is better), mean with a 95% bootstrap interval over test fields pooled over seeds.\n\n"
             + operator_comparison_table(data)

@@ -9,6 +9,7 @@ from romlab.report import (
     md_table,
     operator_comparison_table,
     operator_error_table,
+    operator_params_table,
     pod_decay_table,
     reduction_curve,
     reduction_error_table,
@@ -57,10 +58,29 @@ def fake_operator():
     rows, selected, comps = [], [], []
     for m in (8, 16):
         for seed in (0, 1):
-            rows.append({"method": "fno", "n_z": None, "m": m, "seed": seed, "test_error": 0.2 / m})
-            for kind, scale in (("pod", 3.0), ("nonlinear", 1.0)):
+            rows.append(
+                {
+                    "method": "fno",
+                    "n_z": None,
+                    "m": m,
+                    "seed": seed,
+                    "test_error": 0.2 / m,
+                    "n_params": 139745,
+                }
+            )
+            for kind, scale, n_params in (("pod", 3.0, 17668), ("nonlinear", 1.0, 118404)):
                 selected.append(
                     {"method": kind, "m": m, "seed": seed, "n_z": 4, "test_error": scale * 0.2 / m}
+                )
+                rows.append(
+                    {
+                        "method": kind,
+                        "n_z": 4,
+                        "m": m,
+                        "seed": seed,
+                        "test_error": scale * 0.2 / m,
+                        "n_params": n_params,
+                    }
                 )
         comps.append(
             {"m": m, "a": "nonlinear", "b": "pod", "mean_diff": -0.01, "lo": -0.02, "hi": 0.0}
@@ -143,6 +163,17 @@ def test_operator_tables():
     comps = operator_comparison_table(data)
     assert "| 8 | -0.01 [-0.02, 0] |" in comps
     assert "linear + MLP decoder minus fixed POD decoder" in comps
+
+
+def test_parameter_table_lists_each_model_and_latent_size():
+    lines = operator_params_table(fake_operator()).splitlines()
+    assert lines == [
+        "| model | latent size | parameters |",
+        "|---|---|---|",
+        "| FNO | none | 139,745 |",
+        "| fixed POD decoder | 4 | 17,668 |",
+        "| linear + MLP decoder | 4 | 118,404 |",
+    ]
 
 
 def test_build_report_writes_tables_and_figures(tmp_path):
