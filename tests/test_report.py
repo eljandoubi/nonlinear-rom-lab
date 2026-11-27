@@ -208,6 +208,17 @@ def test_operator_tables():
     assert "linear + MLP decoder minus fixed POD decoder" in comps
 
 
+def test_a_file_without_an_fno_is_summarised_but_not_plotted(tmp_path):
+    data = fake_operator()
+    data["config"]["methods"] = ["pod", "nonlinear"]
+    data["config"]["latent_epochs"] = 20000
+    data["rows"] = [r for r in data["rows"] if r["method"] != "fno"]
+    (tmp_path / "operator_k2_long.json").write_text(json.dumps(data))
+    paths = build_report(tmp_path)
+    assert [p.name for p in paths] == ["summary.md"]
+    assert "4-dimensional inputs, 20000 latent epochs" in (tmp_path / "summary.md").read_text()
+
+
 def test_parameter_table_lists_each_model_and_latent_size():
     lines = operator_params_table(fake_operator()).splitlines()
     assert lines == [

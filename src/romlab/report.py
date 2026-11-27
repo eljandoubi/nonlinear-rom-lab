@@ -319,7 +319,8 @@ def build_report(results: Path) -> list[Path]:
         data = load(path)
         cfg = data["config"]
         title = f"{2 * cfg['modes']}-dimensional inputs, {cfg['latent_epochs']} latent epochs"
-        operator_sets.append((title, data))
+        if "fno" in cfg["methods"]:
+            operator_sets.append((title, data))
         parts.append(
             f"## Operator study, {title}\n\nBurgers, nu = {cfg['nu']}, T = {cfg['t_final']}, "
             f"{cfg['n_grid']} grid points, seeds {cfg['seeds']}, latent sizes {cfg['dims']} "
