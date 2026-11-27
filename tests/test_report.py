@@ -207,6 +207,17 @@ def test_operator_tables():
     assert "linear + MLP decoder minus fixed POD decoder" in comps
 
 
+def test_a_single_seed_gets_no_range(tmp_path):
+    data = fake_operator()
+    data["config"]["seeds"] = [0]
+    data["rows"] = [r for r in data["rows"] if r["seed"] == 0]
+    data["selected"] = [r for r in data["selected"] if r["seed"] == 0]
+    assert operator_error_table(data).splitlines()[2] == "| 8 | 0.025 | 0.075 | 0.025 |"
+    (tmp_path / "operator_k2.json").write_text(json.dumps(data))
+    build_report(tmp_path)
+    assert "range over seeds" not in (tmp_path / "summary.md").read_text()
+
+
 def test_a_file_without_an_fno_is_summarised_but_not_plotted(tmp_path):
     data = fake_operator()
     data["config"]["methods"] = ["pod", "nonlinear"]

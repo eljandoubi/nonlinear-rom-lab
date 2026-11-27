@@ -141,7 +141,10 @@ def operator_error_table(data: dict) -> str:
                 vals = _values(data["rows"], "test_error", method="fno", m=m_size)
             else:
                 vals = _values(data["selected"], "test_error", method=m, m=m_size)
-            cells.append(f"{fmt(vals.mean())} ({fmt(vals.min())} to {fmt(vals.max())})")
+            cell = fmt(vals.mean())
+            if len(vals) > 1:
+                cell += f" ({fmt(vals.min())} to {fmt(vals.max())})"
+            cells.append(cell)
         rows.append(cells)
     return md_table(["training fields"] + [OPERATOR_LABELS[m] for m in methods], rows)
 
@@ -323,8 +326,9 @@ def build_report(results: Path) -> list[Path]:
         parts.append(
             f"## Operator study, {title}\n\nBurgers, nu = {cfg['nu']}, T = {cfg['t_final']}, "
             f"{cfg['n_grid']} grid points, seeds {cfg['seeds']}, latent sizes {cfg['dims']} "
-            "(chosen per fit on validation fields). Test error: mean over seeds with the range "
-            "over seeds in brackets.\n\n"
+            "(chosen per fit on validation fields). Test error: mean over seeds"
+            + (" with the range over seeds in brackets" if len(cfg["seeds"]) > 1 else "")
+            + ".\n\n"
             + operator_error_table(data)
             + "\n\nTrainable parameters.\n\n"
             + operator_params_table(data)
