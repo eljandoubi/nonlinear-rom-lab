@@ -6,21 +6,21 @@
 
 A numerical study of nonlinear reduced representations of PDE solutions. On four families of exact solutions it compares a linear POD basis with polynomial and neural decoders: how many latent numbers each needs, and how much latent noise each amplifies. It then uses the same ideas for operator learning on Burgers solutions with shocks, against a Fourier neural operator (FNO).
 
-The code uses PyTorch and NumPy. The reduction study ran on a laptop CPU and the operator study on one free Colab T4 (an instance in a US region; the data come from the code in this repository and nothing here is private). Accuracy numbers below come from `results/*.json`, and `romlab report` writes the full tables to `results/summary.md`.
+The code uses PyTorch and NumPy. The reduction study ran on a laptop CPU and the operator study on one free Colab T4. Accuracy numbers below come from `results/*.json`, and `romlab report` writes the full tables to `results/summary.md`.
 
-## What the runs show
+## Summary
 
 - A linear POD basis needs 16 modes for 1% error on the pulse and the soliton, and is still at 4.2% and 6% with 16 modes on the front and the Burgers front. A polynomial decoder on the first POD coordinates reaches 1% with 2 coordinates on the pulse, the front and the soliton and with 4 on the Burgers front, one to two times the number of parameters of each family.
-- That accuracy has a price. At 4 coordinates the polynomial decoder changes the decoded field by a median 317% of its norm on the front and 46% on the Burgers front when each latent code gets noise of 5% of its spread. POD, a neural decoder on POD coordinates and an autoencoder stay between 1.8% and 6.5%. Choosing the degree and the ridge on reconstruction error alone did not prevent it.
+- At 4 coordinates the polynomial decoder changes the decoded field by a median 317% of its norm on the front and 46% on the Burgers front when each latent code gets noise of 5% of its spread. POD, a neural decoder on POD coordinates and an autoencoder stay between 1.8% and 6.5%. Choosing the degree and the ridge on reconstruction error alone did not prevent it.
 - With one latent number a linear encoder cannot unfold the pulse family (51% error for the polynomial decoder). An autoencoder with a nonlinear encoder reaches 4.8%.
 - Operator learning on Burgers solutions with shocks, with 1024 training fields and 4 input numbers: a latent model with a fixed POD decoder reaches 8.4%, one with a nonlinear decoder of the same latent size 0.9% (0.39% after five times more epochs), and an FNO 0.31%. With 12 input numbers and 1024 fields the same three reach 10%, 4.3% (3.5%) and 0.68%.
-- The FNO is the most accurate model at every training size in both settings, by a wide margin below 256 fields. The nonlinear decoder gets within a factor 1.3 of it with 4 input numbers after the longer training and stays 5 times behind with 12. Its gain over the linear decoders comes from the nonlinearity, not from training the decoder.
+- The FNO is the most accurate model at every training size in both settings, by a wide margin below 256 fields. The nonlinear decoder gets within a factor 1.3 of it with 4 input numbers after the longer training and stays 5 times behind with 12. A linear decoder trained end to end does no better than the fixed POD basis.
 
 ## Setting
 
 ### Solution families
 
-Four families with a closed-form expression, sampled on a fixed grid of 256 points. The fields are exact, so the only error is the error of the reduction. Parameters are drawn uniformly in a box; the test parameters are fresh draws from the same box, so the test measures interpolation inside the box and nothing else.
+Four families with a closed-form expression, sampled on a fixed grid of 256 points. The fields are exact, so the only error is the error of the reduction. Parameters are drawn uniformly in a box; the test parameters are fresh draws from the same box, so the test measures interpolation inside the box.
 
 | family | solution | parameters | intrinsic dimension |
 |---|---|---|---|
@@ -29,7 +29,7 @@ Four families with a closed-form expression, sampled on a fixed grid of 256 poin
 | `soliton` | KdV one-soliton on [0, 20], height c / 2 and width of order 1 / sqrt(c) | speed in [1, 4], position in [6, 14] | 2 |
 | `burgers` | Cole-Hopf solution of viscous Burgers (nu = 0.02) at t = 0 on the periodic unit interval, shifted | amplitude eps in [0.90, 0.995], shift in [-0.25, 0.25] | 2 |
 
-The soliton and the Burgers front are checked against their PDEs in the tests (residuals of the closed forms), so a typo in a formula cannot pass.
+The soliton and the Burgers front are checked against their PDEs in the tests (residuals of the closed forms).
 
 ### Reducers
 
@@ -60,7 +60,7 @@ Four models, all trained by Adam with a cosine schedule on the same nested train
 | trained linear decoder | same | same | the same basis as a starting point, trained |
 | linear + MLP decoder | same | same | the same, plus an MLP correction that starts at zero |
 
-The three latent models share the input encoder and the MLP; only the decoder differs, so the differences between them are differences of the decoder.
+The three latent models share the input encoder and the MLP and differ only in the decoder.
 
 Two more checks use the same data. The first reconstructs the true test outputs with the reducers of the reduction study (fitted on the training outputs, each with its own encoder), to see what the bottleneck costs apart from the map from the input to the code. The second trains the POD-decoder and nonlinear-decoder models five times longer on the largest training set, to see whether the 4,000-epoch budget limits them.
 
@@ -86,7 +86,7 @@ Mean relative L2 error on the test fields against the latent dimension n, for th
 
 ![POD spectra](results/pod_spectra.png)
 
-The singular values show why. The pulse and the soliton are smooth in their parameters and their spectra fall fast; the front and the Burgers front have a moving sharp feature and their spectra fall slowly.
+The spectra explain the gap: the pulse and the soliton are smooth in their parameters and their singular values fall fast, while the front and the Burgers front have a moving sharp feature and theirs fall slowly.
 
 ### Sensitivity of the decoders
 
@@ -161,7 +161,7 @@ Differences of test error (first minus second, negative means the first is bette
 | 1024 | -0.081 [-0.084, -0.078] | 0.006 [0.0055, 0.0064] | -0.075 [-0.078, -0.073] | -0.075 [-0.078, -0.073] |
 
 - The FNO is the most accurate at every size: 4.4% with 32 fields and 0.31% with 1024, against 27% and 0.9% for the nonlinear decoder.
-- The nonlinear decoder is better than both linear decoders at every size, with intervals that exclude zero. The fixed POD basis and the trained linear decoder behave the same, so training a linear decoder end to end buys nothing; the nonlinearity does.
+- The nonlinear decoder is better than both linear decoders at every size, with intervals that exclude zero. The fixed POD basis and the trained linear decoder behave the same, so training a linear decoder end to end gains nothing.
 - Latent size: at 1024 fields the nonlinear decoder gets 0.97% with 4 numbers and 0.9% with 8, the dimension of the input family and twice it; the fixed POD decoder gets 23% and 8.4%.
 
 Longer training of the latent models (20,000 epochs instead of 4,000, one seed, latent sizes 4 and 8):
@@ -238,7 +238,6 @@ Reconstruction of the true test outputs (one seed):
 - The polynomial decoders are single total-degree polynomials with a degree capped at 12. No bound on their Lipschitz constant is imposed or proven, and the sensitivity numbers show that it matters.
 - The latent sizes of the operator study are chosen on validation fields, so the validation error of the chosen size is optimistic; the test fields are never used for any choice.
 - The nonlinear decoder of the operator study has about six times the parameters of the linear one (table above). A linear decoder cannot use extra parameters, since its output stays in an n_z-dimensional space, but the comparison with the FNO is between models of similar size.
-- The operator study ran on a free Colab T4 in a US region. The code and the data are public; the code produces the data.
 
 ## Related work
 
@@ -285,7 +284,7 @@ tests/                     one test file per module
 
 ## Tests
 
-142 tests run on CPU in under a minute, and line coverage of `src/romlab` is 100%. The tests check properties and not only outputs:
+142 tests run on CPU in under a minute, and line coverage of `src/romlab` is 100%. The tests check properties:
 
 - POD: the Eckart-Young identity (the error is the tail of the spectrum, and no other orthonormal basis of the same size does better).
 - Families and solver: the PDE residual of the soliton and of the Cole-Hopf profile, the agreement of the solver with the Cole-Hopf solution, and the error of the solver falling by more than 100 when the step is divided by 4 (a third-order scheme gives 64).
