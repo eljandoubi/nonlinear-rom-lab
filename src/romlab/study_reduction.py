@@ -138,7 +138,7 @@ def run_reduction_study(
             if progress:
                 progress(f"{name} seed {seed} done")
     return {
-        "config": {**cfg.__dict__, "device": cfg.device},
+        "config": dict(cfg.__dict__),
         "families": descriptions,
         "spectra": spectra,
         "rows": rows,

@@ -298,15 +298,14 @@ def build_report(results: Path) -> list[Path]:
             "### Decay of the POD error\n\nSlope of log error against log n, n from 2.\n\n"
             + pod_decay_table(data)
         )
-        for n in (4,):
-            if n in cfg["dims"]:
-                parts.append(
-                    f"### Decoder sensitivity at n = {n}\n\nNoise: change of the decoded field "
-                    "relative to its norm when each latent code gets noise of 5% of its spread "
-                    "(median and 95th percentile over test fields). Jacobian: 95th percentile of "
-                    "the spectral norm of the decoder Jacobian in unit-spread latent coordinates, "
-                    "divided by the mean field norm.\n\n" + stability_table(data, n)
-                )
+        if 4 in cfg["dims"]:
+            parts.append(
+                "### Decoder sensitivity at n = 4\n\nNoise: change of the decoded field "
+                "relative to its norm when each latent code gets noise of 5% of its spread "
+                "(median and 95th percentile over test fields). Jacobian: 95th percentile of "
+                "the spectral norm of the decoder Jacobian in unit-spread latent coordinates, "
+                "divided by the mean field norm.\n\n" + stability_table(data, 4)
+            )
         for name, plot in (
             ("reduction_error.png", plot_reduction),
             ("pod_spectra.png", plot_spectra),
