@@ -59,7 +59,7 @@ def fit_reducer(method: str, n: int, train, val, seed: int, epochs: int, device:
     if method == "quadratic":
         return PolynomialROM(n, degree=2).fit(train)
     if method == "polynomial":
-        return PolynomialROM(n, degree=None).fit(train, val)
+        return PolynomialROM(n, degree=None, max_degree=12).fit(train, val)
     if method == "pca_mlp":
         return NeuralDecoderROM(n, epochs=epochs, seed=seed, device=device).fit(train, val)
     if method == "autoencoder":
@@ -70,9 +70,10 @@ def fit_reducer(method: str, n: int, train, val, seed: int, epochs: int, device:
 def decoder_stability(model, fields: np.ndarray, rng: np.random.Generator) -> dict:
     """Sensitivity of the decoder in latent coordinates scaled to unit spread.
 
-    ``jac_max`` and ``jac_mean`` are the largest and the mean spectral norm of the Jacobian over
-    the codes of ``fields``, divided by the mean field norm. ``noise_5pct`` is the mean relative
-    change of the decoded field when each code gets noise of 5 percent of its spread.
+    ``jac_*`` are the median, 95th percentile and maximum, over the codes of ``fields``, of the
+    spectral norm of the decoder Jacobian divided by the mean field norm. ``noise_*`` are the
+    median and 95th percentile of the relative change of the decoded field when each code gets
+    noise of 5 percent of its spread.
     """
     codes = model.encode(fields)
     mu, sd = codes.mean(axis=0), np.maximum(codes.std(axis=0), 1e-12)
@@ -80,12 +81,15 @@ def decoder_stability(model, fields: np.ndarray, rng: np.random.Generator) -> di
     def decode_unit(z: np.ndarray) -> np.ndarray:
         return model.decode(mu + z * sd)
 
-    norms = jacobian_spectral_norms(decode_unit, (codes - mu) / sd)
     scale = float(np.linalg.norm(fields, axis=1).mean())
+    norms = jacobian_spectral_norms(decode_unit, (codes - mu) / sd) / scale
+    changes = noise_sensitivity(model.decode, codes, 0.05, rng)
     return {
-        "jac_max": float(norms.max() / scale),
-        "jac_mean": float(norms.mean() / scale),
-        "noise_5pct": noise_sensitivity(model.decode, codes, 0.05, rng),
+        "jac_median": float(np.median(norms)),
+        "jac_p95": float(np.quantile(norms, 0.95)),
+        "jac_max": float(norms.max()),
+        "noise_median": float(np.median(changes)),
+        "noise_p95": float(np.quantile(changes, 0.95)),
     }
 
 

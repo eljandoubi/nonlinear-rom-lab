@@ -46,16 +46,15 @@ def noise_sensitivity(
     codes: np.ndarray,
     level: float,
     rng: np.random.Generator,
-) -> float:
-    """Mean relative change of the decoded field when the codes get Gaussian noise.
+) -> np.ndarray:
+    """Relative change of each decoded field when the codes get Gaussian noise.
 
     The noise on each latent coordinate has standard deviation ``level`` times the spread of that
-    coordinate over ``codes``.
+    coordinate over ``codes``. Returns one value per row of ``codes``.
     """
     codes = np.atleast_2d(codes)
     noisy = codes + level * codes.std(axis=0) * rng.standard_normal(codes.shape)
-    clean = decode(codes)
-    return float(relative_l2_errors(clean, decode(noisy)).mean())
+    return relative_l2_errors(decode(codes), decode(noisy))
 
 
 def paired_bootstrap_ci(

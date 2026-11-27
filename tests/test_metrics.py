@@ -48,8 +48,9 @@ def test_noise_sensitivity_is_zero_without_noise_and_grows_with_it():
     none = noise_sensitivity(decode, codes, 0.0, np.random.default_rng(3))
     small = noise_sensitivity(decode, codes, 0.01, np.random.default_rng(3))
     large = noise_sensitivity(decode, codes, 0.1, np.random.default_rng(3))
-    assert none == 0.0
-    assert 0.0 < small < large
+    assert none.shape == (50,)
+    assert np.all(none == 0.0)
+    assert np.all(small > 0.0) and np.all(large > small)
     assert large == pytest.approx(10 * small, rel=1e-6)
 
 
@@ -61,7 +62,7 @@ def test_noise_sensitivity_is_reproducible_for_a_seed():
 
     a = noise_sensitivity(decode, codes, 0.05, np.random.default_rng(5))
     b = noise_sensitivity(decode, codes, 0.05, np.random.default_rng(5))
-    assert a == b
+    assert np.array_equal(a, b)
 
 
 def test_bootstrap_interval_of_constant_differences_is_a_point():

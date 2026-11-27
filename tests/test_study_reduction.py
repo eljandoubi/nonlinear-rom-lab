@@ -59,7 +59,7 @@ def test_linear_decoder_has_unit_jacobian_in_pod_coordinates():
     codes = pod.encode(data["test"])
     scale = np.linalg.norm(data["test"], axis=1).mean()
     assert stab["jac_max"] == pytest.approx(codes.std(axis=0).max() / scale, rel=1e-5)
-    assert stab["jac_mean"] == pytest.approx(stab["jac_max"], rel=1e-5)
+    assert stab["jac_median"] == pytest.approx(stab["jac_max"], rel=1e-5)
 
 
 def test_run_produces_one_row_per_cell_with_finite_numbers():
@@ -68,7 +68,7 @@ def test_run_produces_one_row_per_cell_with_finite_numbers():
     keys = {"family", "seed", "n", "method", "train_error", "val_error", "test_error"}
     for row in out["rows"]:
         assert keys <= row.keys()
-        assert np.isfinite([row["train_error"], row["test_error"], row["noise_5pct"]]).all()
+        assert np.isfinite([row["train_error"], row["test_error"], row["noise_median"]]).all()
     assert set(out["spectra"]) == {"pulse", "soliton"}
     assert out["spectra"]["pulse"][0] == 1.0
     json.dumps(out)
