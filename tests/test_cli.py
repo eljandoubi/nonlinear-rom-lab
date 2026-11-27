@@ -53,6 +53,8 @@ def test_reduction_then_operator_then_report(tmp_path, capsys):
         == 0
     )
     assert json.loads(red.read_text())["config"]["dims"] == [1, 2]
+    env = json.loads(red.read_text())["environment"]
+    assert env["device"] == "cpu" and {"python", "numpy", "torch"} <= env.keys()
     assert (
         main(
             [

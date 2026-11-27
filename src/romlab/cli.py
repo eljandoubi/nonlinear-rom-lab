@@ -21,6 +21,24 @@ def resolve_device(name: str) -> str:
     return "cuda" if torch.cuda.is_available() else "cpu"
 
 
+def environment_info(device: str) -> dict:
+    """Versions and hardware recorded next to the results."""
+    import platform
+
+    import numpy
+    import torch
+
+    info = {
+        "python": platform.python_version(),
+        "numpy": numpy.__version__,
+        "torch": torch.__version__,
+        "device": device,
+    }
+    if device.startswith("cuda") and torch.cuda.is_available():
+        info["gpu"] = torch.cuda.get_device_name(0)
+    return info
+
+
 def _ints(text: str) -> tuple[int, ...]:
     return tuple(int(t) for t in text.split(","))
 
@@ -82,7 +100,10 @@ def main(argv: list[str] | None = None) -> int:
             epochs=args.epochs,
             device=resolve_device(args.device),
         )
-        _write(args.out, run_reduction_study(cfg, progress=say))
+        _write(
+            args.out,
+            {**run_reduction_study(cfg, progress=say), "environment": environment_info(cfg.device)},
+        )
         say(f"wrote {args.out}")
     elif args.command == "operator":
         cfg = OperatorConfig(
@@ -97,7 +118,10 @@ def main(argv: list[str] | None = None) -> int:
             fno_steps=args.fno_steps,
             device=resolve_device(args.device),
         )
-        _write(args.out, run_operator_study(cfg, progress=say))
+        _write(
+            args.out,
+            {**run_operator_study(cfg, progress=say), "environment": environment_info(cfg.device)},
+        )
         say(f"wrote {args.out}")
     else:
         from romlab.report import build_report
