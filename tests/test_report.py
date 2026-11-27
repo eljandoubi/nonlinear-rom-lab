@@ -5,6 +5,7 @@ import pytest
 
 from romlab.report import (
     build_report,
+    ceiling_table,
     fmt,
     md_table,
     operator_comparison_table,
@@ -101,6 +102,47 @@ def fake_operator():
         "selected": selected,
         "comparisons": comps,
     }
+
+
+def fake_ceiling():
+    rows = []
+    for n_z, pod, ae in ((4, 0.2, 0.04), (8, 0.1, 0.02)):
+        rows.append({"method": "pod", "n_z": n_z, "seed": 0, "test_error": pod})
+        for seed in (0, 1):
+            rows.append({"method": "autoencoder", "n_z": n_z, "seed": seed, "test_error": ae})
+    return {
+        "config": {
+            "modes": 2,
+            "nu": 0.02,
+            "t_final": 0.4,
+            "n_grid": 32,
+            "train_size": 16,
+            "dims": [4, 8],
+            "methods": ["pod", "autoencoder"],
+            "seeds": [0, 1],
+            "epochs": 10,
+        },
+        "rows": rows,
+    }
+
+
+def test_ceiling_table_lists_each_latent_size():
+    lines = ceiling_table(fake_ceiling()).splitlines()
+    assert lines == [
+        "| latent size | POD | autoencoder |",
+        "|---|---|---|",
+        "| 4 | 0.2 | 0.04 |",
+        "| 8 | 0.1 | 0.02 |",
+    ]
+
+
+def test_report_includes_the_ceiling_section(tmp_path):
+    (tmp_path / "ceiling_k2.json").write_text(json.dumps(fake_ceiling()))
+    paths = build_report(tmp_path)
+    text = (tmp_path / "summary.md").read_text()
+    assert [p.name for p in paths] == ["summary.md"]
+    assert "## Output reconstruction, 4-dimensional inputs" in text
+    assert "| 8 | 0.1 | 0.02 |" in text
 
 
 def test_number_format():
